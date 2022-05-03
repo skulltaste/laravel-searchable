@@ -20,6 +20,13 @@ class ModelSearchAspect extends SearchAspect
 
     /** @var array */
     protected $attributes = [];
+    /** @var array */
+
+    protected $advancedAttributes = [];
+    /** @var array */
+    protected $opperators = [];
+    /** @var array */
+    protected $values = [];
 
     /** @var array */
     protected $callsToForward = [];
@@ -117,6 +124,10 @@ class ModelSearchAspect extends SearchAspect
     protected function addSearchConditions(Builder $query, string $term)
     {
         $attributes = $this->attributes;
+        $advancedAttributes = $this->advancedAttributes;
+        $opperators = $this->opperators;
+        $values = $this->values;
+
         $searchTerms = explode(' ', $term);
 
         $query->where(function (Builder $query) use ($attributes, $term, $searchTerms) {

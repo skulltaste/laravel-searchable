@@ -7,38 +7,49 @@ class SearchableAttribute
     /** @var string */
     protected $attribute;
 
+    /** @var string */
+    protected $opperator;
+
     /** @var bool */
     protected $partial;
 
-    public function __construct(string $attribute, bool $partial = true)
+    public function __construct(string $attribute, string $opperator = null, bool $partial = true)
     {
         $this->attribute = $attribute;
-
+        $this->opperator = $opperator;
         $this->partial = $partial;
+
     }
 
-    public static function create(string $attribute, bool $partial = true): self
+    public static function create(string $attribute, string $opperator = null, bool $partial = true): self
     {
-        return new self($attribute, $partial);
+        return new self($attribute, $opperator, $partial);
     }
 
-    public static function createExact(string $attribute): self
+    public static function createExact(string $attribute,string $opperator = null): self
     {
-        return static::create($attribute, false);
+        return static::create($attribute, $opperator,false);
     }
 
-    public static function createMany(array $attributes): array
+    public static function createMany(array $attributes, array $opperators = null): array
     {
+
         return collect($attributes)
             ->map(function ($attribute) {
                 return new self($attribute);
             })
             ->toArray();
+
     }
 
     public function getAttribute(): string
     {
         return $this->attribute;
+    }
+
+    public function getOpperator(): string
+    {
+        return $this->opperator;
     }
 
     public function isPartial(): bool
