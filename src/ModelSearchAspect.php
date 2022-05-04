@@ -24,7 +24,7 @@ class ModelSearchAspect extends SearchAspect
 
     protected $advancedAttributes = [];
     /** @var array */
-    protected $opperators = [];
+    protected $operators = [];
     /** @var array */
     protected $values = [];
 
@@ -42,7 +42,7 @@ class ModelSearchAspect extends SearchAspect
      *
      * @throws \Spatie\Searchable\Exceptions\InvalidSearchableModel
      */
-    public function __construct(string $model, $attributes = [])
+    public function __construct(string $model, $attributes = [],$advancedAttributes = [],$operators = [],$values = [])
     {
         if (! is_subclass_of($model, Model::class)) {
             throw InvalidSearchableModel::notAModel($model);
@@ -62,6 +62,42 @@ class ModelSearchAspect extends SearchAspect
 
         if (is_string($attributes)) {
             $this->attributes = SearchableAttribute::create($attributes);
+
+            return;
+        }
+
+        if (is_array($advancedAttributes)) {
+            $this->advancedAttributes = AdvancedAttribute::createMany($advancedAttributes);
+
+            return;
+        }
+
+        if (is_string($advancedAttributes)) {
+            $this->advancedAttributes = AdvancedAttribute::create($advancedAttributes);
+
+            return;
+        }
+
+        if (is_array($operators)) {
+            $this->operators = Operators::createMany($operators);
+
+            return;
+        }
+
+        if (is_string($operators)) {
+            $this->operators = Operators::create($operators);
+
+            return;
+        }
+
+        if (is_array($values)) {
+            $this->values = AdvancedValues::createMany($values);
+
+            return;
+        }
+
+        if (is_string($values)) {
+            $this->values = AdvancedValues::create($values);
 
             return;
         }
@@ -125,12 +161,12 @@ class ModelSearchAspect extends SearchAspect
     {
         $attributes = $this->attributes;
         $advancedAttributes = $this->advancedAttributes;
-        $opperators = $this->opperators;
+        $operators = $this->operators;
         $values = $this->values;
 
         $searchTerms = explode(' ', $term);
 
-        $query->where(function (Builder $query) use ($attributes, $term, $searchTerms) {
+        $query->where(function (Builder $query) use ($attributes, $term, $searchTerms, $advancedAttributes, $operators, $values) {
             foreach (Arr::wrap($attributes) as $attribute) {
                 $sql = "LOWER({$query->getGrammar()->wrap($attribute->getAttribute())}) LIKE ? ESCAPE ?";
 
@@ -143,6 +179,14 @@ class ModelSearchAspect extends SearchAspect
                         ? $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\'])
                         : $query->orWhere($attribute->getAttribute(), $searchTerm);
                 }
+            }
+            foreach ($advancedAttributes as $key => $advancedAttribute) {
+                $value = mb_strtolower($values[$key], 'UTF8');
+                $value = str_replace("\\", $this->getBackslashByPdo(), $value);
+                $value = addcslashes($value, "%_");
+
+                $query->andWhere($advancedAttribute,$operators[$key],$value);
+
             }
         });
     }
