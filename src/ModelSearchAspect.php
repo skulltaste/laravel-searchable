@@ -42,7 +42,7 @@ class ModelSearchAspect extends SearchAspect
      *
      * @throws \Spatie\Searchable\Exceptions\InvalidSearchableModel
      */
-    public function __construct(string $model, $attributes = [],$advancedAttributes = [],$operators = [],$values = [])
+    public function __construct(string $model, $attributes = [])
     {
         if (! is_subclass_of($model, Model::class)) {
             throw InvalidSearchableModel::notAModel($model);
@@ -66,42 +66,6 @@ class ModelSearchAspect extends SearchAspect
             return;
         }
 
-        if (is_array($advancedAttributes)) {
-            $this->advancedAttributes = AdvancedAttribute::createMany($advancedAttributes);
-
-            return;
-        }
-
-        if (is_string($advancedAttributes)) {
-            $this->advancedAttributes = AdvancedAttribute::create($advancedAttributes);
-
-            return;
-        }
-
-        if (is_array($operators)) {
-            $this->operators = Operators::createMany($operators);
-
-            return;
-        }
-
-        if (is_string($operators)) {
-            $this->operators = Operators::create($operators);
-
-            return;
-        }
-
-        if (is_array($values)) {
-            $this->values = AdvancedValues::createMany($values);
-
-            return;
-        }
-
-        if (is_string($values)) {
-            $this->values = AdvancedValues::create($values);
-
-            return;
-        }
-
         if (is_callable($attributes)) {
             $callable = $attributes;
 
@@ -114,6 +78,14 @@ class ModelSearchAspect extends SearchAspect
     public function addSearchableAttribute(string $attribute, bool $partial = true): self
     {
         $this->attributes[] = SearchableAttribute::create($attribute, $partial);
+
+        return $this;
+    }
+    public function addAdvancedAttribute(string $attribute,string $operator, string $value): self
+    {
+        $this->attributes[] = AdvancedAttribute::create($attribute);
+        $this->operators[] = Operators::create($operator);
+        $this->values[] = AdvancedValues::create($value);
 
         return $this;
     }
