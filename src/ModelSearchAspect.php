@@ -56,10 +56,11 @@ class ModelSearchAspect extends SearchAspect
 
         if (is_array($attributes)) {
             $this->attributes = SearchableAttribute::create($attributes[0]['search_by']);
-            $this->advancedAttributes = $attributes[0]['advanced_attribute'];
-            $this->operators = $attributes[0]['advanced_operator'];
-            $this->values = $attributes[0]['advanced_value'];
-
+            if(isset($attributes[0]['advanced_attribute'])) {
+                $this->advancedAttributes = $attributes[0]['advanced_attribute'];
+                $this->operators = $attributes[0]['advanced_operator'];
+                $this->values = $attributes[0]['advanced_value'];
+            }
             return;
         }
 
