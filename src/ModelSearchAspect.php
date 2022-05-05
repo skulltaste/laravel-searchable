@@ -157,7 +157,9 @@ class ModelSearchAspect extends SearchAspect
                 $query->where($advancedAttribute,$operators[$key],$value);
 
             }
+
         });
+        dd($query);
     }
 
     protected function getBackslashByPdo()
