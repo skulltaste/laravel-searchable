@@ -28,6 +28,9 @@ class ModelSearchAspect extends SearchAspect
     /** @var array */
     protected $values = [];
 
+    /** @var string */
+    protected $with;
+
     /** @var array */
     protected $callsToForward = [];
 
@@ -60,6 +63,9 @@ class ModelSearchAspect extends SearchAspect
                 $this->advancedAttributes = $attributes[0]['advanced_attribute'];
                 $this->operators = $attributes[0]['advanced_operator'];
                 $this->values = $attributes[0]['advanced_value'];
+            }
+            if(isset($attributes[0]['with'])){
+                $this->with = $attributes[0]['with'];
             }
             return;
         }
@@ -131,10 +137,11 @@ class ModelSearchAspect extends SearchAspect
         $advancedAttributes = $this->advancedAttributes;
         $operators = $this->operators;
         $values = $this->values;
+        $with = $this->with;
 
         $searchTerms = explode(' ', $term);
 
-        $query->where(function (Builder $query) use ($attributes, $term, $searchTerms, $advancedAttributes, $operators, $values) {
+        $query->where(function (Builder $query) use ($attributes, $term, $searchTerms, $advancedAttributes, $operators, $values, $with) {
             foreach (Arr::wrap($attributes) as $attribute) {
                 $sql = "LOWER({$query->getGrammar()->wrap($attribute->getAttribute())}) LIKE ? ESCAPE ?";
 
@@ -156,6 +163,9 @@ class ModelSearchAspect extends SearchAspect
 
                 $query->where($advancedAttribute,$operators[$key],$value);
 
+            }
+            if($with){
+                $query->with($with);
             }
 
         });
