@@ -58,7 +58,7 @@ class ModelSearchAspect extends SearchAspect
             $this->attributes = SearchableAttribute::create($attributes[0]['search_by']);
             $this->advancedAttributes = AdvancedAttribute::createMany($attributes[0]['advanced_attribute']);
             $this->operators = Operators::createMany($attributes[0]['advanced_operator']);
-            $this->values = AdvancedValues::createMany($attributes[0]['advanced_value']);
+            $this->values = $attributes[0]['advanced_value'];
 
             return;
         }
@@ -149,7 +149,7 @@ class ModelSearchAspect extends SearchAspect
             }
             //dd($values);
             foreach ($advancedAttributes as $key => $advancedAttribute) {
-                $value = mb_strtolower($values[$key]->value, 'UTF8');
+                $value = mb_strtolower($values[$key], 'UTF8');
                 $value = str_replace("\\", $this->getBackslashByPdo(), $value);
                 $value = addcslashes($value, "%_");
 
