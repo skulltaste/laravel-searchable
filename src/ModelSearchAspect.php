@@ -159,7 +159,7 @@ class ModelSearchAspect extends SearchAspect
             }
 
         });
-        dd($query);
+        //dd($query);
     }
 
     protected function getBackslashByPdo()
