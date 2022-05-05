@@ -84,14 +84,6 @@ class ModelSearchAspect extends SearchAspect
 
         return $this;
     }
-    public function addAdvancedAttribute(string $attribute,string $operator, string $value): self
-    {
-        $this->attributes[] = AdvancedAttribute::create($attribute);
-        $this->operators[] = Operators::create($operator);
-        $this->values[] = AdvancedValues::create($value);
-
-        return $this;
-    }
 
     public function addExactSearchableAttribute(string $attribute): self
     {
@@ -155,6 +147,7 @@ class ModelSearchAspect extends SearchAspect
                         : $query->orWhere($attribute->getAttribute(), $searchTerm);
                 }
             }
+            dd($values);
             foreach ($advancedAttributes as $key => $advancedAttribute) {
                 $value = mb_strtolower($values[$key], 'UTF8');
                 $value = str_replace("\\", $this->getBackslashByPdo(), $value);
