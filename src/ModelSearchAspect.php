@@ -153,7 +153,7 @@ class ModelSearchAspect extends SearchAspect
                 $value = str_replace("\\", $this->getBackslashByPdo(), $value);
                 $value = addcslashes($value, "%_");
 
-                $query->andWhere($advancedAttribute,$operators[$key],$value);
+                $query->where($advancedAttribute,$operators[$key],$value);
 
             }
         });
