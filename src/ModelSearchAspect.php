@@ -147,9 +147,9 @@ class ModelSearchAspect extends SearchAspect
                         : $query->orWhere($attribute->getAttribute(), $searchTerm);
                 }
             }
-            dd($values);
+            //dd($values);
             foreach ($advancedAttributes as $key => $advancedAttribute) {
-                $value = mb_strtolower($values[$key], 'UTF8');
+                $value = mb_strtolower($values[$key]->value, 'UTF8');
                 $value = str_replace("\\", $this->getBackslashByPdo(), $value);
                 $value = addcslashes($value, "%_");
 
