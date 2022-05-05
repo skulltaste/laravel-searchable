@@ -141,7 +141,7 @@ class ModelSearchAspect extends SearchAspect
 
         $searchTerms = explode(' ', $term);
 
-        $query->where(function (Builder $query) use ($attributes, $term, $searchTerms, $advancedAttributes, $operators, $values, $with) {
+        $query->where(function (Builder $query) use ($attributes, $term, $searchTerms, $advancedAttributes, $operators, $values) {
             foreach (Arr::wrap($attributes) as $attribute) {
                 $sql = "LOWER({$query->getGrammar()->wrap($attribute->getAttribute())}) LIKE ? ESCAPE ?";
 
@@ -164,11 +164,11 @@ class ModelSearchAspect extends SearchAspect
                 $query->where($advancedAttribute,$operators[$key],$value);
 
             }
-            if($with){
-                $query->with($with);
-            }
-
         });
+
+        if($with){
+            $query->with($with);
+        }
         //dd($query);
     }
 
