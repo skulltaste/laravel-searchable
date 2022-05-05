@@ -32,7 +32,7 @@ class Search
             $attributes = $attributes[0];
         }
 
-        if (is_array(Arr::get($attributes))) {
+        if (is_array($attributes)) {
             $attributes = $attributes;
         }
 
