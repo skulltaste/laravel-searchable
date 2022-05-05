@@ -32,8 +32,8 @@ class Search
             $attributes = $attributes[0];
         }
 
-        if (is_array(Arr::get($attributes, 0))) {
-            $attributes = $attributes[0];
+        if (is_array(Arr::get($attributes, 'search_by'))) {
+            $attributes = $attributes['search_by'];
         }
 
         $searchAspect = new ModelSearchAspect($modelClass, $attributes);
