@@ -21,10 +21,12 @@ class ModelSearchAspect extends SearchAspect
     /** @var array */
     protected $attributes = [];
     /** @var array */
-
+    protected $relationshipAttributes = [];
+    /** @var array */
     protected $advancedAttributes = [];
     /** @var array */
     protected $operators = [];
+
     /** @var array */
     protected $values = [];
 
@@ -66,6 +68,7 @@ class ModelSearchAspect extends SearchAspect
             }
             if(isset($attributes[0]['with'])){
                 $this->with = $attributes[0]['with'];
+                $this->relationshipAttributes = $attributes[0]['relationship_attribute'];
             }
             return;
         }
@@ -134,28 +137,62 @@ class ModelSearchAspect extends SearchAspect
     protected function addSearchConditions(Builder $query, string $term)
     {
         $attributes = $this->attributes;
-        $advancedAttributes = $this->advancedAttributes;
-        $operators = $this->operators;
-        $values = $this->values;
-        $with = $this->with;
 
         $searchTerms = explode(' ', $term);
 
-        $query->where(function (Builder $query) use ($attributes, $term, $searchTerms, $advancedAttributes, $operators, $values) {
-            foreach (Arr::wrap($attributes) as $attribute) {
-                $sql = "LOWER({$query->getGrammar()->wrap($attribute->getAttribute())}) LIKE ? ESCAPE ?";
+        foreach (Arr::wrap($attributes) as $key=> $attribute) {
+            if($attribute['type'] == 'where') {
+                $query->where(function (Builder $query) use ($attribute, $term, $searchTerms) {
+                    $sql = "LOWER({$query->getGrammar()->wrap($attribute['attribute']->getAttribute())}) LIKE ? ESCAPE ?";
 
-                foreach ($searchTerms as $searchTerm) {
-                    $searchTerm = mb_strtolower($searchTerm, 'UTF8');
-                    $searchTerm = str_replace("\\", $this->getBackslashByPdo(), $searchTerm);
-                    $searchTerm = addcslashes($searchTerm, "%_");
+                    foreach ($searchTerms as $searchTerm) {
+                        $searchTerm = mb_strtolower($searchTerm, 'UTF8');
+                        $searchTerm = str_replace("\\", $this->getBackslashByPdo(), $searchTerm);
+                        $searchTerm = addcslashes($searchTerm, "%_");
 
-                    $attribute->isPartial()
-                        ? $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\'])
-                        : $query->orWhere($attribute->getAttribute(), $searchTerm);
-                }
+                        $attribute->isPartial()
+                            ? $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\'])
+                            : $query->orWhere($attribute->getAttribute(), $searchTerm);
+                    }
+
+                });
+            } else if($attribute['type'] == 'advanced'){
+
+                $value = mb_strtolower($attribute['values'], 'UTF8');
+                $value = str_replace("\\", $this->getBackslashByPdo(), $value);
+                $value = addcslashes($value, "%_");
+
+                $query->where($attribute['attribute'],$attribute['operator'],$value);
+
+            } else if($attribute['type'] == 'with'){
+                $query->with([$attribute['relationship'] => function ($query) use ($attribute, $searchTerms) {
+                    $sql = "LOWER({$query->getGrammar()->wrap($attribute['attribute']->getAttribute())}) LIKE ? ESCAPE ?";
+
+                    foreach ($searchTerms as $searchTerm) {
+                        $searchTerm = mb_strtolower($searchTerm, 'UTF8');
+                        $searchTerm = str_replace("\\", $this->getBackslashByPdo(), $searchTerm);
+                        $searchTerm = addcslashes($searchTerm, "%_");
+
+                        $attribute->isPartial()
+                            ? $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\'])
+                            : $query->orWhere($attribute->getAttribute(), $searchTerm);
+                    }
+
+                    //$query->where($attribute['attribute'], 'like', '%' . $searchTerms . '%');
+                }]);
+
             }
+
+        }
+
+
+
+
             //dd($values);
+
+
+/*
+
             foreach ($advancedAttributes as $key => $advancedAttribute) {
                 $value = mb_strtolower($values[$key], 'UTF8');
                 $value = str_replace("\\", $this->getBackslashByPdo(), $value);
@@ -164,11 +201,17 @@ class ModelSearchAspect extends SearchAspect
                 $query->where($advancedAttribute,$operators[$key],$value);
 
             }
-        });
+
+
+        foreach ($relationshipAttributes as $key => $relationshipAttribute) {
+            $query->with([$this->with => function ($query) use ($relationshipAttribute, $searchTerms) {
+                    $query->where($relationshipAttribute, 'like', '%' . $searchTerms . '%');
+            }]);
+        }
 
         if($with){
             $query->with($with);
-        }
+        }*/
         //dd($query);
     }
 
