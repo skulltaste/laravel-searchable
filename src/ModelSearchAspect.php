@@ -137,7 +137,7 @@ class ModelSearchAspect extends SearchAspect
         $attributes = $this->attributes;
         $type = $this->type;
         $values = $this->values;
-        $operator = $this->operator;
+        $operators = $this->operator;
 
         //$searchTerms = explode(' ', $term);
 
@@ -165,7 +165,7 @@ class ModelSearchAspect extends SearchAspect
                 $value = str_replace("\\", $this->getBackslashByPdo(), $value);
                 $value = addcslashes($value, "%_");
 
-                $query->where($attribute,$operator,$value);
+                $query->where($attribute[$key],$operators[$key],$value);
 
             } else if($type[$key] == 'with'){
                 $query->with([$attribute['relationship'] => function ($query) use ($attribute, $values, $key) {
@@ -179,7 +179,7 @@ class ModelSearchAspect extends SearchAspect
 
                         $attribute->isPartial()
                             ? $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\'])
-                            : $query->orWhere($attribute, $searchTerm);
+                            : $query->orWhere($attribute[$key], $searchTerm);
                     }
 
                     //$query->where($attribute['attribute'], 'like', '%' . $searchTerms . '%');
