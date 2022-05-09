@@ -135,13 +135,17 @@ class ModelSearchAspect extends SearchAspect
     protected function addSearchConditions(Builder $query, string $term)
     {
         $attributes = $this->attributes;
+        $type = $this->type;
+        $values = $this->values;
+        $operator = $this->operator;
 
-        $searchTerms = explode(' ', $term);
+        //$searchTerms = explode(' ', $term);
 
         foreach (Arr::wrap($attributes) as $key=> $attribute) {
-            if($attribute['type'] == 'where') {
-                $query->where(function (Builder $query) use ($attribute, $term, $searchTerms) {
-                    $sql = "LOWER({$query->getGrammar()->wrap($attribute['attribute']->getAttribute())}) LIKE ? ESCAPE ?";
+            if($type[$key] == 'where') {
+                $query->where(function (Builder $query) use ($attribute, $term, $values,$key) {
+                    $sql = "LOWER({$query->getGrammar()->wrap($attribute)}) LIKE ? ESCAPE ?";
+                    $searchTerms = explode(' ', $values[$key]);
 
                     foreach ($searchTerms as $searchTerm) {
                         $searchTerm = mb_strtolower($searchTerm, 'UTF8');
@@ -150,30 +154,32 @@ class ModelSearchAspect extends SearchAspect
 
                         $attribute->isPartial()
                             ? $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\'])
-                            : $query->orWhere($attribute->getAttribute(), $searchTerm);
+                            : $query->orWhere($attribute, $searchTerm);
                     }
 
                 });
-            } else if($attribute['type'] == 'advanced'){
+            } else if($type[$key] == 'advanced'){
 
-                $value = mb_strtolower($attribute['values'], 'UTF8');
+
+                $value = mb_strtolower($values[$key], 'UTF8');
                 $value = str_replace("\\", $this->getBackslashByPdo(), $value);
                 $value = addcslashes($value, "%_");
 
-                $query->where($attribute['attribute'],$attribute['operator'],$value);
+                $query->where($attribute,$operator,$value);
 
-            } else if($attribute['type'] == 'with'){
-                $query->with([$attribute['relationship'] => function ($query) use ($attribute, $searchTerms) {
+            } else if($type[$key] == 'with'){
+                $query->with([$attribute['relationship'] => function ($query) use ($attribute, $values, $key) {
                     $sql = "LOWER({$query->getGrammar()->wrap($attribute['attribute']->getAttribute())}) LIKE ? ESCAPE ?";
+                    $searchTerms = explode(' ', $values[$key]);
 
                     foreach ($searchTerms as $searchTerm) {
-                        $searchTerm = mb_strtolower($searchTerm, 'UTF8');
+                        $searchTerm = mb_strtolower($values[$key], 'UTF8');
                         $searchTerm = str_replace("\\", $this->getBackslashByPdo(), $searchTerm);
                         $searchTerm = addcslashes($searchTerm, "%_");
 
                         $attribute->isPartial()
                             ? $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\'])
-                            : $query->orWhere($attribute->getAttribute(), $searchTerm);
+                            : $query->orWhere($attribute, $searchTerm);
                     }
 
                     //$query->where($attribute['attribute'], 'like', '%' . $searchTerms . '%');
