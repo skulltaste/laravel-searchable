@@ -152,9 +152,9 @@ class ModelSearchAspect extends SearchAspect
                         $searchTerm = str_replace("\\", $this->getBackslashByPdo(), $searchTerm);
                         $searchTerm = addcslashes($searchTerm, "%_");
 
-                        $attribute->isPartial()
-                            ? $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\'])
-                            : $query->orWhere($attribute, $searchTerm);
+
+                        $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\']);
+
                     }
 
                 });
@@ -177,9 +177,8 @@ class ModelSearchAspect extends SearchAspect
                         $searchTerm = str_replace("\\", $this->getBackslashByPdo(), $searchTerm);
                         $searchTerm = addcslashes($searchTerm, "%_");
 
-                        $attribute->isPartial()
-                            ? $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\'])
-                            : $query->orWhere($attribute[$key], $searchTerm);
+
+                           $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\']);
                     }
 
                     //$query->where($attribute['attribute'], 'like', '%' . $searchTerms . '%');
