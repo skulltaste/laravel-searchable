@@ -23,7 +23,7 @@ class ModelSearchAspect extends SearchAspect
     /** @var array */
     protected $relationshipAttributes = [];
     /** @var array */
-    protected $advancedAttributes = [];
+    protected $type = [];
     /** @var array */
     protected $operators = [];
 
@@ -60,15 +60,13 @@ class ModelSearchAspect extends SearchAspect
         $this->model = $model;
 
         if (is_array($attributes)) {
-            $this->attributes = SearchableAttribute::create($attributes[0]['search_by']);
-            if(isset($attributes[0]['advanced_attribute'])) {
-                $this->advancedAttributes = $attributes[0]['advanced_attribute'];
-                $this->operators = $attributes[0]['advanced_operator'];
-                $this->values = $attributes[0]['advanced_value'];
-            }
+            $this->attributes = SearchableAttribute::create($attributes[0]['attribute']);
+                $this->type = $attributes[0]['type'];
+                $this->operators = $attributes[0]['operator'];
+                $this->values = $attributes[0]['value'];
+
             if(isset($attributes[0]['with'])){
                 $this->with = $attributes[0]['with'];
-                $this->relationshipAttributes = $attributes[0]['relationship_attribute'];
             }
             return;
         }
