@@ -138,6 +138,7 @@ class ModelSearchAspect extends SearchAspect
         $type = $this->type;
         $values = $this->values;
         $operators = $this->operators;
+        $with = $this->with;
 
         //$searchTerms = explode(' ', $term);
 
@@ -168,8 +169,8 @@ class ModelSearchAspect extends SearchAspect
                 $query->where($attribute[$key],$operators[$key],$value);
 
             } else if($type[$key] == 'with'){
-                $query->with([$attribute['relationship'] => function ($query) use ($attribute, $values, $key) {
-                    $sql = "LOWER({$query->getGrammar()->wrap($attribute['attribute']->getAttribute())}) LIKE ? ESCAPE ?";
+                $query->with([$with => function ($query) use ($attribute, $values, $key) {
+                    $sql = "LOWER({$query->getGrammar()->wrap($attribute[$key])}) LIKE ? ESCAPE ?";
                     $searchTerms = explode(' ', $values[$key]);
 
                     foreach ($searchTerms as $searchTerm) {
