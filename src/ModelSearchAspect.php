@@ -166,7 +166,7 @@ class ModelSearchAspect extends SearchAspect
                 $value = str_replace("\\", $this->getBackslashByPdo(), $value);
                 $value = addcslashes($value, "%_");
 
-                $query->where($attribute[$key],$operators[$key],$value);
+                $query->where($attribute,$operators[$key],$value);
 
             } else if($type[$key] == 'with'){
                 $query->with([$with => function ($query) use ($attribute, $values, $key) {
