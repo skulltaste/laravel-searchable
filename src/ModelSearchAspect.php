@@ -137,7 +137,7 @@ class ModelSearchAspect extends SearchAspect
         $attributes = $this->attributes;
         $type = $this->type;
         $values = $this->values;
-        $operators = $this->operator;
+        $operators = $this->operators;
 
         //$searchTerms = explode(' ', $term);
 
