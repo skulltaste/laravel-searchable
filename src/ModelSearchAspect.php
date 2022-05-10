@@ -159,7 +159,7 @@ class ModelSearchAspect extends SearchAspect
                     }
 
                 });
-            } else if($type[$key] == 'advanced'){
+            } else if($type[$key] == 'advanced' && $values[$key] && $values[$key] != ''){
 
 
                 $value = mb_strtolower($values[$key], 'UTF8');
@@ -168,7 +168,7 @@ class ModelSearchAspect extends SearchAspect
 
                 $query->where($attribute,$operators[$key],$value);
 
-            } else if($type[$key] == 'with'){
+            } else if($type[$key] == 'with' && $values[$key] && $values[$key] != ''){
                 $query->with([$with => function ($query) use ($attribute, $values, $key) {
                     $sql = "LOWER({$query->getGrammar()->wrap($attribute[$key])}) LIKE ? ESCAPE ?";
                     $searchTerms = explode(' ', $values[$key]);
