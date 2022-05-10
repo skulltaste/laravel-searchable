@@ -170,7 +170,7 @@ class ModelSearchAspect extends SearchAspect
 
             } else if($type[$key] == 'with' && $values[$key] && $values[$key] != ''){
                 $query->with([$with => function ($query) use ($attribute, $values, $key) {
-                    $sql = "LOWER({$query->getGrammar()->wrap($attribute[$key])}) LIKE ? ESCAPE ?";
+                    $sql = "LOWER({$query->getGrammar()->wrap($attribute)}) LIKE ? ESCAPE ?";
                     $searchTerms = explode(' ', $values[$key]);
 
                     foreach ($searchTerms as $searchTerm) {
@@ -184,7 +184,7 @@ class ModelSearchAspect extends SearchAspect
 
                     //$query->where($attribute['attribute'], 'like', '%' . $searchTerms . '%');
                 }]);
-                
+
 
             }
 
