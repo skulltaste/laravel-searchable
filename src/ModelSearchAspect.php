@@ -184,6 +184,7 @@ class ModelSearchAspect extends SearchAspect
 
                     //$query->where($attribute['attribute'], 'like', '%' . $searchTerms . '%');
                 }]);
+                dd($query);
 
             }
 
