@@ -149,19 +149,20 @@ class ModelSearchAspect extends SearchAspect
         $values = $this->values;
         $operators = $this->operators;
         $with = $this->with;
-        $constraint_columns = $this->constraint_column;
-        $constraint_values = $this->constraint_value;
 
         //$searchTerms = explode(' ', $term);
-        foreach ($constraint_columns as $key=> $constraint_column) {
+        if($this->constraint_column) {
+            $constraint_columns = $this->constraint_column;
+            $constraint_values = $this->constraint_value;
+            foreach ($constraint_columns as $key => $constraint_column) {
 
-            $value = mb_strtolower($constraint_values[$key], 'UTF8');
-            $value = str_replace("\\", $this->getBackslashByPdo(), $value);
-            $value = addcslashes($value, "%_");
+                $value = mb_strtolower($constraint_values[$key], 'UTF8');
+                $value = str_replace("\\", $this->getBackslashByPdo(), $value);
+                $value = addcslashes($value, "%_");
 
-            $query->where($constraint_column,'=',$value);
+                $query->where($constraint_column, '=', $value);
+            }
         }
-
         foreach (Arr::wrap($attributes) as $key=> $attribute) {
             if($type[$key] == 'where') {
                 $query->where(function (Builder $query) use ($attribute, $term, $values,$key) {
