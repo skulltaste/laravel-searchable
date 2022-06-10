@@ -159,7 +159,7 @@ class ModelSearchAspect extends SearchAspect
                 $value = mb_strtolower($constraint_values[$key], 'UTF8');
                 $value = str_replace("\\", $this->getBackslashByPdo(), $value);
                 $value = addcslashes($value, "%_");
-                if($constraint_column != null) {
+                if(isset($constraint_column)) {
                     $query->where($constraint_column, '=', $value);
                 }
             }
