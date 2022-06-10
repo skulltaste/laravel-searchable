@@ -151,7 +151,7 @@ class ModelSearchAspect extends SearchAspect
         $with = $this->with;
 
         //$searchTerms = explode(' ', $term);
-        if(count($this->constraint_column) > 0) {
+        if($this->constraint_column && !is_null($this->constraint_column[0])) {
             $constraint_columns = $this->constraint_column;
             $constraint_values = $this->constraint_value;
             foreach ($constraint_columns as $key => $constraint_column) {
