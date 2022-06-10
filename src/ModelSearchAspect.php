@@ -153,7 +153,7 @@ class ModelSearchAspect extends SearchAspect
         $constraint_values = $this->constraint_value;
 
         //$searchTerms = explode(' ', $term);
-        foreach (Arr::wrap($constraint_columns) as $key=> $constraint_column) {
+        foreach ($constraint_columns as $key=> $constraint_column) {
 
             $value = mb_strtolower($constraint_values[$key], 'UTF8');
             $value = str_replace("\\", $this->getBackslashByPdo(), $value);
