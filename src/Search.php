@@ -15,6 +15,7 @@ class Search
      *
      * @return \Spatie\Searchable\Search
      */
+
     public function registerAspect($searchAspect): self
     {
         if (is_string($searchAspect)) {

@@ -36,6 +36,12 @@ class ModelSearchAspect extends SearchAspect
     /** @var array */
     protected $callsToForward = [];
 
+    /** @var array */
+    protected $constraint_column = [];
+
+    /** @var array */
+    protected $constraint_value =[];
+
     public static function forModel(string $model, ...$attributes): self
     {
         return new self($model, $attributes);
@@ -67,6 +73,10 @@ class ModelSearchAspect extends SearchAspect
 
             if(isset($attributes[0]['with'])){
                 $this->with = $attributes[0]['with'];
+            }
+            if(isset($attributes[0]['constraint_column'])){
+                $this->constraint_column = $attributes[0]['constraint_column'];
+                $this->constraint_value = $attributes[0]['constraint_value'];
             }
             return;
         }
@@ -139,8 +149,18 @@ class ModelSearchAspect extends SearchAspect
         $values = $this->values;
         $operators = $this->operators;
         $with = $this->with;
+        $constraint_column = $this->constraint_column;
+        $constraint_value = $this->constraint_value;
 
         //$searchTerms = explode(' ', $term);
+        foreach (Arr::wrap($constraint_column) as $key=> $attribute) {
+
+            $value = mb_strtolower($constraint_value[$key], 'UTF8');
+            $value = str_replace("\\", $this->getBackslashByPdo(), $value);
+            $value = addcslashes($value, "%_");
+
+            $query->where($constraint_column,'=',$value);
+        }
 
         foreach (Arr::wrap($attributes) as $key=> $attribute) {
             if($type[$key] == 'where') {
