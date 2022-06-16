@@ -164,6 +164,9 @@ class ModelSearchAspect extends SearchAspect
                 }
             }
         }
+        if($with){
+            $query->with($with);
+        }
         foreach (Arr::wrap($attributes) as $key=> $attribute) {
             if($type[$key] == 'where') {
                 $query->where(function (Builder $query) use ($attribute, $term, $values,$key) {
@@ -190,26 +193,8 @@ class ModelSearchAspect extends SearchAspect
 
                 $query->where($attribute,$operators[$key],$value);
 
-            } else if($type[$key] == 'with'){
-                $query->with([$with => function ($query) use ($attribute, $values, $key) {
-                    if($values[$key] && $values[$key] != '') {
-                        $sql = "LOWER({$query->getGrammar()->wrap($attribute)}) LIKE ? ESCAPE ?";
-                        $searchTerms = explode(' ', $values[$key]);
-
-                        foreach ($searchTerms as $searchTerm) {
-                            $searchTerm = mb_strtolower($values[$key], 'UTF8');
-                            $searchTerm = str_replace("\\", $this->getBackslashByPdo(), $searchTerm);
-                            $searchTerm = addcslashes($searchTerm, "%_");
-
-
-                            $query->orWhereRaw($sql, ["%{$searchTerm}%", '\\']);
-                        }
-                    }
-                    //$query->where($attribute['attribute'], 'like', '%' . $searchTerms . '%');
-                }]);
-
-
             }
+
 
         }
 
