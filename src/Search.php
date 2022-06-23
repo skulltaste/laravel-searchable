@@ -59,13 +59,13 @@ class Search
         return $this;
     }
 
-    public function search($query = '', ?User $user = null): SearchResultCollection
+    public function search(string $query, ?User $user = null): SearchResultCollection
     {
-
+     
         return $this->perform($query, $user);
     }
 
-    public function perform($query = '', ?User $user = null): SearchResultCollection
+    public function perform(string $query, ?User $user = null): SearchResultCollection
     {
         $searchResults = new SearchResultCollection();
 

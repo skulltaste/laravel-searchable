@@ -10,7 +10,7 @@ abstract class SearchAspect
     /** @var int */
     protected $limit;
 
-    abstract public function getResults($term): Collection;
+    abstract public function getResults(string $term): Collection;
 
     public function getType(): string
     {
