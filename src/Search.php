@@ -65,7 +65,7 @@ class Search
         return $this->perform($query, $user);
     }
 
-    public function perform(string $query = '', ?User $user = null): SearchResultCollection
+    public function perform($query = '', ?User $user = null): SearchResultCollection
     {
         $searchResults = new SearchResultCollection();
 
