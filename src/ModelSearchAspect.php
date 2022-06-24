@@ -164,7 +164,7 @@ class ModelSearchAspect extends SearchAspect
                 }
             }
         }
-        if($with){
+        if(isset($with)){
             $query->with($with);
         }
         foreach (Arr::wrap($attributes) as $key=> $attribute) {

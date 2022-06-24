@@ -61,7 +61,7 @@ class Search
 
     public function search(string $query, ?User $user = null): SearchResultCollection
     {
-     
+
         return $this->perform($query, $user);
     }
 
