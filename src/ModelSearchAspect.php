@@ -151,6 +151,9 @@ class ModelSearchAspect extends SearchAspect
         $with = $this->with;
 
         //$searchTerms = explode(' ', $term);
+        if(isset($with)){
+            $query->with($with);
+        }
         if($this->constraint_column && !is_null($this->constraint_column[0])) {
             $constraint_columns = $this->constraint_column;
             $constraint_values = $this->constraint_value;
@@ -163,9 +166,6 @@ class ModelSearchAspect extends SearchAspect
                     $query->where($constraint_column, '=', $value);
                 }
             }
-        }
-        if(isset($with)){
-            $query->with($with);
         }
         foreach (Arr::wrap($attributes) as $key=> $attribute) {
             if($type[$key] == 'where') {
